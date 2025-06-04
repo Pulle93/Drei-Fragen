@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drei Fragen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Zusätzliche benutzerdefinierte Stile */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f4f8; /* Standard heller Hintergrund */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.5s ease; /* Sanfter Übergang für Hintergrundfarbe */
+        }
+        .container {
+            background-color: #ffffff; /* Weißer Container-Hintergrund */
+            padding: 2.5rem; /* Mehr Polsterung */
+            border-radius: 1.5rem; /* Stärker abgerundete Ecken */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Deutlicherer Schatten */
+            text-align: center;
+            max-width: 90vw; /* Maximale Breite für Responsivität */
+            width: 500px; /* Feste Breite für größere Bildschirme */
+            display: flex; /* Flexbox für Zentrierung des Inhalts */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .title {
+            font-size: 3.5rem; /* Größere Schriftgröße für den Titel */
+            font-weight: 800; /* Extra fett */
+            color: #1a202c; /* Dunkler Text */
+            margin-bottom: 2rem; /* Mehr Abstand nach unten */
+            line-height: 1.2;
+        }
+        .question-text, .completion-text {
+            font-size: 2.2rem; /* Schriftgröße für die Frage und den Abschluss-Text */
+            font-weight: 700; /* Fett */
+            color: #2d3748; /* Dunklerer Grauton */
+            margin-bottom: 2.5rem; /* Abstand nach unten */
+            line-height: 1.3;
+        }
+        .pictogram {
+            font-size: 6rem; /* Größe des Piktogramms (Emoji) */
+            margin-bottom: 2rem; /* Abstand unter dem Piktogramm */
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem; /* Abstand zwischen den Buttons */
+            margin-top: 2rem; /* Abstand nach oben */
+            flex-wrap: wrap; /* Buttons umbrechen auf kleineren Bildschirmen */
+            justify-content: center;
+        }
+        .app-button {
+            background-color: #4f46e5; /* Lila Hintergrund für Buttons */
+            color: white;
+            padding: 1rem 2.5rem; /* Mehr Polsterung für Buttons */
+            border-radius: 0.75rem; /* Abgerundete Ecken für Buttons */
+            font-size: 1.5rem; /* Größere Schriftgröße für Buttons */
+            font-weight: 700; /* Fett */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Sanfte Übergänge */
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3); /* Schatten für Buttons */
+            cursor: pointer;
+            border: none; /* Kein Rand */
+            min-width: 150px; /* Mindestbreite für Buttons */
+        }
+        .app-button:hover {
+            background-color: #4338ca; /* Dunkleres Lila beim Hover */
+            transform: translateY(-2px); /* Leichter Aufwärtseffekt */
+        }
+        .app-button:active {
+            transform: translateY(0); /* Zurücksetzen beim Klicken */
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Responsives Design für kleinere Bildschirme */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem;
+                border-radius: 1rem;
+            }
+            .title {
+                font-size: 2.5rem; /* Kleinere Schriftgröße auf Mobilgeräten */
+                margin-bottom: 1.5rem;
+            }
+            .question-text, .completion-text {
+                font-size: 1.8rem;
+                margin-bottom: 2rem;
+            }
+            .app-button {
+                padding: 0.8rem 2rem;
+                font-size: 1.2rem;
+                min-width: unset; /* Mindestbreite auf Mobilgeräten zurücksetzen */
+                width: 100%; /* Buttons füllen die Breite aus */
+            }
+            .button-group {
+                flex-direction: column; /* Buttons untereinander auf Mobilgeräten */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="appContainer" class="container">
+        </div>
+
+    <script>
+        const appContainer = document.getElementById('appContainer');
+
+        // Array aller Fragen
+        const questions = [
+            "Nenne mir drei Dinge, die du siehst.",
+            "Nenne mir drei Dinge, die du hörst.",
+            "Nenne mir drei Dinge, die du spürst.",
+            "Nenne mir zwei Dinge, die du siehst.",
+            "Nenne mir zwei Dinge, die du hörst.",
+            "Nenne mir zwei Dinge, die du spürst.",
+            "Nenne mir ein Ding, das du siehst.",
+            "Nenne mir ein Ding, das du hörst.",
+            "Nenne mir ein Ding, das du spürst."
+        ];
+
+        let currentQuestionIndex = 0;
+
+        /**
+         * Setzt die Hintergrundfarbe des Bodys auf den Standardwert zurück.
+         */
+        function resetBodyBackgroundColor() {
+            document.body.style.backgroundColor = '#f0f4f8'; // Standard heller Hintergrund
+        }
+
+        /**
+         * Displays the initial start page content.
+         */
+        function showStartPage() {
+            resetBodyBackgroundColor(); // Hintergrundfarbe zurücksetzen
+            appContainer.innerHTML = `
+                <h1 class="title">Drei Fragen</h1>
+                <button id="startButton" class="app-button">Start</button>
+            `;
+            document.getElementById('startButton').addEventListener('click', function() {
+                currentQuestionIndex = 0; // Setze den Index zurück, wenn neu gestartet wird
+                showQuestionPage(currentQuestionIndex);
+            });
+        }
+
+        /**
+         * Displays a specific question page content based on the index.
+         * @param {number} index - The index of the question to display.
+         */
+        function showQuestionPage(index) {
+            // Sicherstellen, dass der Index innerhalb der Grenzen liegt
+            if (index < 0 || index >= questions.length) {
+                console.error("Ungültiger Fragenindex:", index);
+                showStartPage(); // Zurück zur Startseite, falls etwas schiefgeht
+                return;
+            }
+
+            const questionText = questions[index];
+            const isLastQuestion = (index === questions.length - 1);
+
+            let bgColor = '#f0f4f8'; // Standardfarbe
+            let pictogram = '';
+
+            // Bestimme Farbe und Piktogramm basierend auf dem Fragentext
+            if (questionText.includes("siehst")) {
+                bgColor = '#e0f2fe'; // Hellblau für "Sehen" (Tailwind blue-100)
+                pictogram = '👀'; // Augen-Emoji
+            } else if (questionText.includes("hörst")) {
+                bgColor = '#fffbeb'; // Hellgelb für "Hören" (Tailwind amber-50)
+                pictogram = '👂'; // Ohr-Emoji
+            } else if (questionText.includes("spürst")) {
+                bgColor = '#ede9fe'; // Hellviolett für "Spüren" (Tailwind violet-100)
+                pictogram = '✋'; // Hand-Emoji
+            }
+
+            document.body.style.backgroundColor = bgColor; // Hintergrundfarbe anpassen
+
+            appContainer.innerHTML = `
+                <div class="pictogram">${pictogram}</div>
+                <h2 class="question-text">${questionText}</h2>
+                <div class="button-group">
+                    <button id="backButton" class="app-button">Zurück</button>
+                    <button id="nextButton" class="app-button">${isLastQuestion ? 'Fertig' : 'Weiter'}</button>
+                </div>
+            `;
+
+            // Event Listener für den "Zurück"-Button
+            document.getElementById('backButton').addEventListener('click', function() {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    showQuestionPage(currentQuestionIndex);
+                } else {
+                    // Wenn wir auf der ersten Frage sind, gehen wir zur Startseite zurück
+                    showStartPage();
+                }
+            });
+
+            // Event Listener für den "Weiter" / "Fertig"-Button
+            document.getElementById('nextButton').addEventListener('click', function() {
+                if (isLastQuestion) {
+                    showCompletionPage(); // Zeige die Abschlussseite
+                } else {
+                    currentQuestionIndex++;
+                    showQuestionPage(currentQuestionIndex);
+                }
+            });
+        }
+
+        /**
+         * Displays the completion page content.
+         */
+        function showCompletionPage() {
+            resetBodyBackgroundColor(); // Hintergrundfarbe zurücksetzen
+            appContainer.innerHTML = `
+                <h2 class="completion-text">Atme durch, du hast es geschafft.</h2>
+                <div class="button-group">
+                    <button id="restartButton" class="app-button">Neustart</button>
+                </div>
+            `;
+            document.getElementById('restartButton').addEventListener('click', showStartPage);
+        }
+
+        // Initialisiere die App, indem die Startseite angezeigt wird
+        showStartPage();
+    </script>
+</body>
+</html>
