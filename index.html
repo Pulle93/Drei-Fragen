@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drei Fragen</title>
+    <!-- Tailwind CSS CDN für einfaches Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Zusätzliche benutzerdefinierte Stile */
@@ -37,12 +38,19 @@
             margin-bottom: 2rem; /* Mehr Abstand nach unten */
             line-height: 1.2;
         }
-        .question-text, .completion-text {
-            font-size: 2.2rem; /* Schriftgröße für die Frage und den Abschluss-Text */
+        .question-text, .completion-text, .instruction-text {
+            font-size: 2.2rem; /* Schriftgröße für die Frage, den Abschluss-Text und den Anleitungstext */
             font-weight: 700; /* Fett */
             color: #2d3748; /* Dunklerer Grauton */
             margin-bottom: 2.5rem; /* Abstand nach unten */
             line-height: 1.3;
+        }
+        .instruction-content {
+            font-size: 1.2rem;
+            color: #4a5568;
+            text-align: left;
+            margin-bottom: 2rem;
+            max-width: 400px; /* Begrenzung der Breite des Anleitungstextes */
         }
         .pictogram {
             font-size: 6rem; /* Größe des Piktogramms (Emoji) */
@@ -76,6 +84,22 @@
             transform: translateY(0); /* Zurücksetzen beim Klicken */
             box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
         }
+        .link-button {
+            background-color: transparent; /* Transparenter Hintergrund für Link-Button */
+            color: #4f46e5; /* Lila Textfarbe */
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #4f46e5; /* Lila Rand */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-top: 1rem; /* Abstand nach oben */
+        }
+        .link-button:hover {
+            background-color: #4f46e5;
+            color: white;
+        }
 
         /* Responsives Design für kleinere Bildschirme */
         @media (max-width: 640px) {
@@ -87,15 +111,23 @@
                 font-size: 2.5rem; /* Kleinere Schriftgröße auf Mobilgeräten */
                 margin-bottom: 1.5rem;
             }
-            .question-text, .completion-text {
+            .question-text, .completion-text, .instruction-text {
                 font-size: 1.8rem;
                 margin-bottom: 2rem;
+            }
+            .instruction-content {
+                font-size: 1rem;
             }
             .app-button {
                 padding: 0.8rem 2rem;
                 font-size: 1.2rem;
                 min-width: unset; /* Mindestbreite auf Mobilgeräten zurücksetzen */
                 width: 100%; /* Buttons füllen die Breite aus */
+            }
+            .link-button {
+                font-size: 1rem;
+                padding: 0.4rem 0.8rem;
+                width: 100%;
             }
             .button-group {
                 flex-direction: column; /* Buttons untereinander auf Mobilgeräten */
@@ -105,7 +137,8 @@
 </head>
 <body>
     <div id="appContainer" class="container">
-        </div>
+        <!-- Inhalt wird dynamisch geladen -->
+    </div>
 
     <script>
         const appContainer = document.getElementById('appContainer');
@@ -140,11 +173,13 @@
             appContainer.innerHTML = `
                 <h1 class="title">Drei Fragen</h1>
                 <button id="startButton" class="app-button">Start</button>
+                <button id="instructionsButton" class="link-button">Anleitung</button>
             `;
             document.getElementById('startButton').addEventListener('click', function() {
                 currentQuestionIndex = 0; // Setze den Index zurück, wenn neu gestartet wird
                 showQuestionPage(currentQuestionIndex);
             });
+            document.getElementById('instructionsButton').addEventListener('click', showInstructionsPage);
         }
 
         /**
@@ -222,6 +257,23 @@
                 </div>
             `;
             document.getElementById('restartButton').addEventListener('click', showStartPage);
+        }
+
+        /**
+         * Displays the instructions page content.
+         */
+        function showInstructionsPage() {
+            resetBodyBackgroundColor(); // Hintergrundfarbe zurücksetzen
+            appContainer.innerHTML = `
+                <h2 class="instruction-text">Anleitung</h2>
+                <p class="instruction-content">
+                    Diese Übung wurde entwickelt, um dir einen Moment der Ruhe zu schenken, wiederkehrende Gedanken zu unterbrechen und den Kopf freizubekommen. Nimm dir einfach einen Augenblick Zeit für dich, um die folgenden Fragen in deinem eigenen Tempo zu beantwortern. Es gibt keinen Druck, und es ist absolut in Ordnung, wenn sich deine Antworten wiederholen. Sieh es als eine Gelegenheit, dich auf neue Gedanken zu bringen.
+                </p>
+                <div class="button-group">
+                    <button id="backToStartButton" class="app-button">Zurück zur Startseite</button>
+                </div>
+            `;
+            document.getElementById('backToStartButton').addEventListener('click', showStartPage);
         }
 
         // Initialisiere die App, indem die Startseite angezeigt wird
